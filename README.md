@@ -1,314 +1,589 @@
-# 🐾 Dog Adoption Platform (PAWS)
-
 <div align="center">
-  <p><strong>A modern, full-stack application connecting loving homes with dogs in need.</strong></p>
-  <p><em>Phase 1 Complete ✅ • Phase 2 In Progress 🚧</em></p>
+
+# 🐾 Paws&Hearts — Dog Adoption Platform
+
+### *Connecting abandoned dogs with loving homes across Tamil Nadu*
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/atlas)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+<br/>
+
+> A full-stack web application that digitizes and streamlines the entire dog adoption process — from listing and browsing to interview scheduling and final approval — built with a premium dark glassmorphism UI and a robust REST API backend.
+
+<br/>
+
+![Platform Preview](https://img.shields.io/badge/Status-Live%20on%20Atlas-brightgreen?style=flat-square&logo=mongodb)
+![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square&logo=github)
+![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-blue?style=flat-square)
+
 </div>
 
 ---
 
-## 📖 Overview
+## 📋 Table of Contents
 
-The **Dog Adoption Platform** is a web-based solution primarily aimed at preventing the deaths of abandoned dogs in Tamil Nadu, but easily adaptable for any region. It streamlines the adoption process by providing an intuitive interface for current owners (donors/shelters) to list their dogs, and for prospective adopters to find their new best friend. 
+- [Overview](#-overview)
+- [Live Demo](#-live-demo)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack)
+- [System Architecture](#-system-architecture)
+- [Database Schema](#-database-schema)
+- [API Reference](#-api-reference)
+- [User Roles & Workflow](#-user-roles--workflow)
+- [Screenshots](#-screenshots)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Project Structure](#-project-structure)
+- [Deployment](#-deployment)
+- [Author](#-author)
 
-The application emphasizes safety, verifiability, and seamless communication to ensure every dog goes to a loving, responsible home.
+---
 
-## ✨ Features (Phase 1 Complete)
+## 🌟 Overview
 
-**Authentication & Authorization:**
-- ✅ Secure JWT-based authentication with role-based access control
-- ✅ Registration restricted to: adopter, donor, shelter (no public admin signup)
-- ✅ Password minimum 6 characters validation
-- ✅ Protected admin panel for platform-wide oversight
+**Paws&Hearts** addresses a critical real-world problem — the high number of abandoned dogs in Tamil Nadu that never find homes due to a fragmented, unorganized adoption process.
 
-**Dog Listings (V2 API):**
-- ✅ Detailed dog profiles with breed, age, health status, vaccination records, and images
-- ✅ Browse & filter: location, vaccination status, health condition, age range
-- ✅ Donors/shelters can create listings (requires authentication)
-- ✅ Public browsing without login
+This platform provides:
+- A **centralized marketplace** for donors and shelters to list dogs
+- A **structured application flow** for adopters with transparency at every step
+- A **built-in interview scheduling system** replacing unorganized WhatsApp communication
+- A **role-based access system** ensuring only verified users can perform sensitive actions
+- A **cloud-first architecture** with MongoDB Atlas, ready for production deployment
 
-**Adoption Workflow:**
-- ✅ Adopters submit structured applications (reason, home type, experience)
-- ✅ Application status tracking: pending → under_review → approved/rejected
-- ✅ Automatic rejection of competing applications when one is approved
-- ✅ Role-specific dashboards: adopters see their apps, donors/shelters manage incoming requests
+The project demonstrates a complete software engineering lifecycle: requirements analysis, database modeling, REST API design, frontend development, authentication/authorization, and cloud deployment readiness.
 
-**Admin Capabilities:**
-- ✅ View all platform applications
-- ✅ Approve/reject any application
-- ✅ Platform-wide statistics (available dogs, adopters, donors)
+---
 
-## 🛠 Technology Stack
+## 🚀 Live Demo
+
+> **Frontend:** `http://localhost:3000`  
+> **Backend API:** `http://localhost:5000/api`  
+> **Health Check:** `GET /health`
+
+| Test Account | Email | Password | Role |
+|---|---|---|---|
+| Donor | `donor@test.com` | `Test@1234` | Donor |
+| Adopter | `adopter@test.com` | `Test@1234` | Adopter |
+| Admin | `admin@test.com` | `Test@1234` | Admin |
+
+---
+
+## ✨ Key Features
+
+### 🔐 Authentication & Security
+- JWT-based stateless authentication with 30-day token expiry
+- Bcrypt password hashing (salt rounds: 10)
+- Role-based access control (RBAC) — 5 distinct roles
+- Password reset via secure crypto token (email integration ready)
+- Protected routes on both frontend and backend
+
+### 🐕 Dog Listings
+- Rich dog profiles: breed, age, gender, size, health status, vaccination, temperament
+- Multi-image upload with Multer (cloud migration to Cloudinary ready)
+- Geospatial location storage (GeoJSON `2dsphere` index for future map integration)
+- Adoption urgency levels: Normal / High / Critical
+- Training status tracking: None / Basic / Advanced
+- Public browsing without login; listing requires authentication
+
+### 📋 Adoption Workflow
+- Structured application form: reason, home type, pet experience, family count
+- Adopter provides direct contact (phone, WhatsApp) for post-approval communication
+- Full application lifecycle: `pending → under_review → interview_scheduled → approved/rejected`
+- Duplicate application prevention per dog per adopter
+
+### 🗓️ Interview Scheduling System
+- Donors propose interview date/time with venue notes
+- Adopters can: **Confirm**, **Counter-propose** a different time, or **Decline & withdraw**
+- Reschedule counter tracking (maximum 3 per application)
+- Inline guidelines for both donor and adopter explaining each step
+- Donor notified when adopter counter-proposes
+
+### 📊 Dashboard
+- Donors: See all incoming applications, manage interviews, approve/reject
+- Adopters: Track all submitted applications and interview status
+- Contact details (phone/WhatsApp/city) revealed to donor only after application is active
+- Platform-wide stats: total dogs, adopted, available, donors, adopters
+
+### 🎨 UI/UX Design
+- **Dark glassmorphism** theme consistent across all 11 pages
+- Responsive design (mobile, tablet, desktop)
+- Smooth animations via Framer Motion
+- Indigo → Purple → Pink gradient branding
+- Premium feel with glass-panel cards, backdrop blur, and micro-interactions
+
+---
+
+## 🛠 Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 14 (React 18)
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
-- **State/API**: Axios with JWT interceptor
-- **Real-time**: Socket.io-client (infrastructure ready for Phase 2)
+| Technology | Version | Purpose |
+|---|---|---|
+| **Next.js** | 16.x | React framework, SSR/SSG, routing |
+| **TypeScript** | 5.x | Type-safe development |
+| **Tailwind CSS** | 3.x | Utility-first styling |
+| **Framer Motion** | Latest | Page & component animations |
+| **Lucide React** | Latest | Icon library |
+| **Axios** | Latest | HTTP client with interceptors |
+| **Socket.IO Client** | 4.x | Real-time communication |
 
 ### Backend
-- **Framework**: Node.js with Express.js
-- **Language**: TypeScript
-- **Database**: MongoDB (via Mongoose)
-- **Authentication**: JWT, bcryptjs
-- **File Upload**: Multer
-- **Real-time**: Socket.io (infrastructure ready for Phase 2)
+| Technology | Version | Purpose |
+|---|---|---|
+| **Node.js** | 18.x | JavaScript runtime |
+| **Express.js** | 4.x | REST API framework |
+| **TypeScript** | 6.x | Type-safe server code |
+| **Mongoose** | 5.x | MongoDB ODM |
+| **JSON Web Token** | 9.x | Authentication tokens |
+| **Bcryptjs** | 3.x | Password hashing |
+| **Multer** | 2.x | File/image uploads |
+| **Zod** | 4.x | Schema validation |
+| **Socket.IO** | 4.x | Real-time events |
+
+### Database & Infrastructure
+| Technology | Purpose |
+|---|---|
+| **MongoDB Atlas** | Cloud-hosted database (M0 free tier) |
+| **GeoJSON / 2dsphere index** | Location-based dog search |
+
+---
+
+## 🏗 System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENT BROWSER                       │
+│              Next.js 16  (React + TypeScript)               │
+│   Pages: Home, Browse, Dashboard, Dog Detail, Auth, Admin   │
+└───────────────────────┬─────────────────────────────────────┘
+                        │ HTTP/REST  +  Socket.IO
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     BACKEND SERVER                          │
+│              Express.js  (Node.js + TypeScript)             │
+│                                                             │
+│  ┌──────────┐  ┌───────────┐  ┌─────────────┐             │
+│  │  /auth   │  │ /dogs-v2  │  │/applications│             │
+│  └──────────┘  └───────────┘  └─────────────┘             │
+│                                                             │
+│  Middleware: JWT Auth → RBAC → Zod Validation → Controller  │
+└───────────────────────┬─────────────────────────────────────┘
+                        │ Mongoose ODM
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   MONGODB ATLAS (Cloud)                     │
+│                                                             │
+│   Collections: users │ dogs │ adoptionapplications         │
+│                notifications │ (legacy: donors, adopters)  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🗄 Database Schema
+
+### User Collection
+```typescript
+{
+  name: string,           // 2-100 characters
+  email: string,          // unique, lowercase
+  passwordHash: string,   // bcrypt hash
+  role: 'admin' | 'donor' | 'shelter' | 'adopter' | 'vet',
+  phone?: string,
+  isVerified: boolean,
+  resetPasswordToken?: string,
+  resetPasswordExpires?: Date,
+  // Shelter-specific
+  shelterRegistrationNumber?: string,
+  // Adopter-specific
+  experience?: string,
+  homeType?: 'apartment' | 'house' | 'farm'
+}
+```
+
+### Dog Collection
+```typescript
+{
+  name: string,
+  age: number,            // stored in months
+  breed: string,
+  gender: 'Male' | 'Female',
+  size: 'Small' | 'Medium' | 'Large' | 'Extra Large',
+  healthStatus: 'Healthy' | 'Minor Care Required' | 'Special Needs',
+  vaccinated: boolean,
+  location: {
+    type: 'Point',
+    coordinates: [longitude, latitude],  // GeoJSON
+    address: string
+  },
+  media: [{ url: string, type: 'image' | 'video' }],
+  listedBy: ObjectId,     // ref: User
+  adopted: boolean,
+  adoptedBy?: ObjectId,   // ref: User
+  temperament: string[],
+  trainingStatus: 'None' | 'Basic' | 'Advanced',
+  adoptionUrgency: 'Normal' | 'High' | 'Critical'
+}
+```
+
+### AdoptionApplication Collection
+```typescript
+{
+  dogId: ObjectId,                  // ref: Dog
+  adopterId: ObjectId,              // ref: User
+  shelterOrDonorId: ObjectId,       // ref: User
+  status: 'pending' | 'under_review' | 'interview_scheduled' | 'approved' | 'rejected',
+  reasonForAdopting: string,
+  hasOtherPets: boolean,
+  familyMembersCount: number,
+  agreeToHomeVisit: boolean,
+  adopterPhone?: string,            // revealed to donor after active
+  adopterWhatsApp?: string,
+  adopterCity?: string,
+  interviewDate?: Date,
+  interviewStatus: 'not_scheduled' | 'proposed' | 'confirmed' | 'rescheduled' | 'cancelled',
+  interviewNotes?: string,          // donor adds venue/instructions
+  rescheduleCount: number           // max 3
+}
+// Compound unique index: { dogId, adopterId } — prevents duplicate applications
+```
+
+---
+
+## 📡 API Reference
+
+### Authentication — `/api/auth`
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/register` | Public | Create account (adopter/donor/shelter) |
+| `POST` | `/login` | Public | Sign in, receive JWT token |
+| `GET` | `/me` | 🔒 JWT | Get authenticated user's profile |
+| `POST` | `/forgot-password` | Public | Generate password reset token |
+| `POST` | `/reset-password` | Public | Set new password with token |
+
+### Dogs — `/api/dogs-v2`
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/` | Public | List all available dogs (filterable) |
+| `POST` | `/` | 🔒 Donor/Shelter | Create new dog listing |
+| `GET` | `/:id` | Public | Get single dog details |
+| `PUT` | `/:id` | 🔒 Owner/Admin | Update dog listing |
+| `DELETE` | `/:id` | 🔒 Owner/Admin | Remove dog listing |
+| `GET` | `/my/listings` | 🔒 Donor/Shelter | Get current user's listings |
+
+### Applications — `/api/applications`
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/` | 🔒 Adopter | Submit adoption application |
+| `GET` | `/` | 🔒 Donor/Admin | Get all incoming applications |
+| `GET` | `/my` | 🔒 Adopter | Get own submitted applications |
+| `PATCH` | `/:id/status` | 🔒 Donor/Admin | Approve or reject application |
+| `POST` | `/:id/interview` | 🔒 Donor | Propose interview date & time |
+| `POST` | `/:id/respond` | 🔒 Adopter | Confirm / Counter-propose / Decline |
+
+### Platform — `/api`
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/stats` | Public | Platform-wide statistics |
+| `GET` | `/health` | Public | Server health check |
+
+---
+
+## 👥 User Roles & Workflow
+
+### Complete Adoption Lifecycle
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: DONOR lists a dog                                      │
+│          (name, breed, photos, location, health info)           │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────────┐
+│  STEP 2: ADOPTER browses → opens dog page → submits application │
+│          (reason, family info, phone/WhatsApp, home type)       │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────────┐
+│  STEP 3: DONOR reviews application on dashboard                 │
+│          Status: pending → under_review                         │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────────┐
+│  STEP 4: DONOR schedules interview                              │
+│          (picks date/time, adds location notes)                 │
+│          Status: interview_scheduled                            │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────────┐
+│  STEP 5: ADOPTER responds to interview proposal                 │
+│          ✓ Confirm  |  🔄 Request different time  |  ✗ Decline  │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────────┐
+│  STEP 6: DONOR approves after interview                         │
+│          → Adopter sees donor's contact (phone/WhatsApp)        │
+│          → Dog marked as adopted in database                    │
+│          Status: approved                                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Role Permissions Matrix
+| Action | Adopter | Donor | Shelter | Admin |
+|---|:---:|:---:|:---:|:---:|
+| Browse dogs | ✅ | ✅ | ✅ | ✅ |
+| Submit application | ✅ | ❌ | ❌ | ✅ |
+| List a dog | ❌ | ✅ | ✅ | ✅ |
+| Edit own listing | ❌ | ✅ | ✅ | ✅ |
+| Edit any listing | ❌ | ❌ | ❌ | ✅ |
+| Schedule interview | ❌ | ✅ | ✅ | ✅ |
+| Respond to interview | ✅ | ❌ | ❌ | ✅ |
+| Approve application | ❌ | ✅ | ✅ | ✅ |
+| Admin panel | ❌ | ❌ | ❌ | ✅ |
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- [Node.js](https://nodejs.org/) v16 or higher
-- [MongoDB](https://www.mongodb.com/try/download/community) running locally or MongoDB Atlas URI
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/dog-adoption-platform.git
-   cd dog-adoption-platform
-   ```
-
-2. **Setup Backend**
-   ```bash
-   cd backend
-   npm install
-   
-   # Create environment variables file
-   cp .env.example .env
-   # Update .env with your MongoDB URI and JWT secret
-   
-   # Start the backend server
-   npm run dev
-   ```
-
-3. **Setup Frontend**
-   ```bash
-   cd frontend
-   npm install
-   
-   # Create environment variables file
-   cp .env.local.example .env.local
-   
-   # Start the frontend server
-   npm run dev
-   ```
-
-4. **Seed Test Data**
-   ```bash
-   cd backend
-   npm run seed
-   ```
-   This creates:
-   - **Admin**: admin@paws.org / admin123
-   - **Adopter**: adopter@test.com / adopter123
-   - **Shelter**: tamilnadurelief@paws.org / shelter123
-   - **6 dog listings** from various Tamil Nadu locations
-
-5. **View the App**
-   - Frontend: `http://localhost:3000`
-   - Backend API: `http://localhost:5000/api`
-
-## 📂 Project Structure
-
-```
-dog-adoption-platform/
-│
-├── backend/                  # Express/Node.js server (V2 API)
-│   ├── src/
-│   │   ├── app.ts            # Entry point & Express setup
-│   │   ├── models/           # Mongoose schemas (User, Dog, AdoptionApplication)
-│   │   ├── controllers/      # V2 controllers (Auth, Dog, Application)
-│   │   ├── routes/           # API endpoints
-│   │   ├── middlewares/      # JWT auth & role authorization
-│   │   └── services/         # [Deprecated v1 services]
-│   ├── uploads/              # Dog images (ignored by git)
-│   ├── seed.ts               # Database seeding script
-│   ├── clear.ts              # Database cleanup script
-│   └── package.json
-│
-└── frontend/                 # Next.js application
-    ├── src/
-    │   ├── components/       # Reusable React components
-    │   ├── pages/            # Next.js pages & routing
-    │   ├── context/          # Auth context
-    │   ├── utils/            # API client & helpers
-    │   └── styles/           # Global styles
-    └── package.json
+```bash
+Node.js  >= 18.x
+npm      >= 9.x
+MongoDB  (local) or MongoDB Atlas account
 ```
 
-## 🔐 Test Accounts
+### 1. Clone the Repository
+```bash
+git clone https://github.com/mugesh81/Dog_adoption_platform.git
+cd Dog_adoption_platform
+```
 
-After running `npm run seed` in the backend:
-
-| Role    | Email                          | Password   | Purpose                          |
-|---------|--------------------------------|------------|----------------------------------|
-| Admin   | admin@paws.org                 | admin123   | Platform oversight, approve all  |
-| Adopter | adopter@test.com               | adopter123 | Apply for dog adoptions          |
-| Shelter | tamilnadurelief@paws.org       | shelter123 | List dogs, manage applications   |
-| Donors  | See seed output                | donor123   | List dogs, manage applications   |
-
-## 🧪 Development Commands
-
-**Backend:**
+### 2. Setup Backend
 ```bash
 cd backend
-npm run dev      # Start dev server with hot-reload
-npm run seed     # Populate database with test data
-npm run clear    # Clear all data from database
-npm run build    # Compile TypeScript
+npm install
+
+# Copy example env file and fill in your values
+cp .env.example .env
+# Edit .env with your MongoDB URI and JWT secret
 ```
 
-**Frontend:**
+### 3. Setup Frontend
 ```bash
 cd frontend
-npm run dev      # Start Next.js dev server
-npm run build    # Production build
-npm run start    # Start production server
-npm run lint     # Run ESLint
+npm install
+
+# Copy example env file
+cp .env.local.example .env.local
+# Edit .env.local with your backend API URL
 ```
 
-## 🎯 Phase 2 Features (In Progress)
+### 4. Run Development Servers
 
-1. **Donor/Shelter Listing Management**
-   - Edit and delete own dog listings
-   - Mark dogs as adopted/inactive
-   - Enhanced listing form validation
+**Terminal 1 — Backend:**
+```bash
+cd backend
+npm run dev
+# Server starts at http://localhost:5000
+```
 
-2. **Interview Scheduling**
-   - Propose interview dates when approving applications
-   - Adopter can confirm or request different time
-   - Interview status tracking
+**Terminal 2 — Frontend:**
+```bash
+cd frontend
+npm run dev
+# App starts at http://localhost:3000
+```
 
-3. **In-App Notifications**
-   - Status change alerts for adopters
-   - New application alerts for donors/shelters
-   - Read/unread notification tracking
+### 5. (Optional) Seed Sample Data
+```bash
+cd backend
+npm run seed    # Adds sample dogs and users to the database
+```
 
-4. **Password Reset Flow**
-   - Forgot password with email token
-   - Token expiry (1 hour)
-   - Secure password update
+---
 
-5. **Design Unification**
-   - Consistent component styling across all pages
-   - Unified color scheme and spacing
-   - Improved mobile responsiveness
+## 🔐 Environment Variables
 
-## 🛠 Technology Stack
+### Backend (`backend/.env`)
+```env
+# Database — MongoDB Atlas connection string
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/dog-adoption-platform?retryWrites=true&w=majority
 
-### Frontend
-- **Framework**: Next.js (React)
-- **Styling**: Tailwind CSS
-- **State/Data**: Axios, Framer Motion
-- **Real-time**: Socket.io-client
+# Server
+PORT=5000
+NODE_ENV=development
 
-### Backend
-- **Framework**: Node.js with Express.js
-- **Language**: TypeScript
-- **Database**: MongoDB (via Mongoose)
-- **Real-time**: Socket.io
-- **Security**: JWT for Authentication, bcryptjs for password hashing
+# Security — generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+JWT_SECRET=your_strong_random_64_char_secret
 
-## 🚀 Getting Started
+# CORS — comma-separated allowed frontend origins
+CORS_ORIGIN=http://localhost:3000
 
-To get a local copy up and running, follow these simple steps.
+# Email (for password reset links)
+FRONTEND_URL=http://localhost:3000
+```
 
-### Prerequisites
+### Frontend (`frontend/.env.local`)
+```env
+# Point to your backend API
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
 
-Ensure you have the following installed on your local machine:
-- [Node.js](https://nodejs.org/en/download/) (v16 or higher)
-- [MongoDB](https://www.mongodb.com/try/download/community) (running locally or a MongoDB Atlas URI)
+# (Optional) Custom image domain for production
+NEXT_PUBLIC_IMAGE_DOMAIN=your-backend-domain.com
+```
 
-### Installation
+> ⚠️ **Security Notice:** Never commit `.env` or `.env.local` files. Both are listed in `.gitignore`.
 
-1. **Clone the repository**
-   ```sh
-   git clone https://github.com/yourusername/dog-adoption-platform.git
-   cd dog-adoption-platform
-   ```
+---
 
-2. **Setup Backend**
-   ```sh
-   cd backend
-   npm install
-   
-   # Create environment variables file
-   cp .env.example .env
-   # Make sure to update the .env file with your actual MongoDB URI and a secure JWT Secret
-   
-   # Start the backend development server
-   npm run dev
-   ```
-
-3. **Setup Frontend**
-   ```sh
-   # Open a new terminal and navigate to the project root, then into frontend
-   cd frontend
-   npm install
-   
-   # Create environment variables file
-   cp .env.local.example .env.local
-   
-   # Start the frontend development server
-   npm run dev
-   ```
-
-4. **View the App**
-   Open your browser and navigate to `http://localhost:3000`. The backend API runs on `http://localhost:5000`.
-
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```
 dog-adoption-platform/
 │
-├── backend/                  # Express/Node.js server
+├── backend/                          # Node.js + Express + TypeScript API
 │   ├── src/
-│   │   ├── app.ts            # Entry point & Express setup
-│   │   ├── models/           # Mongoose schemas
-│   │   ├── routes/           # API Endpoints
-│   │   └── ...
-│   ├── uploads/              # Dog image uploads (ignored by git)
-│   └── package.json
+│   │   ├── app.ts                    # Express server, CORS, DB connection
+│   │   ├── controllers/
+│   │   │   ├── auth.controller.ts    # Register, login, password reset
+│   │   │   ├── dog.controller.ts     # CRUD for dog listings
+│   │   │   ├── application.controller.ts  # Apply, interview, approve
+│   │   │   └── notification.controller.ts
+│   │   ├── models/
+│   │   │   ├── User.ts               # Unified user model (all roles)
+│   │   │   ├── Dog.ts                # Dog listing with GeoJSON
+│   │   │   ├── AdoptionApplication.ts # Full application + interview state
+│   │   │   └── Notification.ts
+│   │   ├── routes/
+│   │   │   ├── auth.routes.ts        # /api/auth/*
+│   │   │   ├── dog.routes.ts         # /api/dogs-v2/*
+│   │   │   ├── application.routes.ts # /api/applications/*
+│   │   │   └── notification.routes.ts
+│   │   └── services/                 # Legacy V1 services (backward compat)
+│   ├── tests/                        # Jest unit + integration tests
+│   ├── uploads/                      # Local image storage (gitignored)
+│   ├── .env.example                  # Required env vars template
+│   ├── package.json
+│   └── tsconfig.json
 │
-└── frontend/                 # Next.js application
+└── frontend/                         # Next.js 16 + TypeScript app
     ├── src/
-    │   ├── components/       # Reusable React components
-    │   ├── pages/            # Next.js pages & routing
-    │   └── ...
-    └── package.json
+    │   ├── pages/
+    │   │   ├── index.tsx             # Home: hero, stats, dog grid
+    │   │   ├── browse.tsx            # Search & filter all dogs
+    │   │   ├── dog/[id].tsx          # Dog detail + application form
+    │   │   ├── dashboard.tsx         # User hub: applications + interviews
+    │   │   ├── my-listings.tsx       # Donor's dog management
+    │   │   ├── edit-listing/[id].tsx # Edit a specific dog listing
+    │   │   ├── login.tsx             # Sign in
+    │   │   ├── register.tsx          # Create account
+    │   │   ├── forgot-password.tsx   # Request reset link
+    │   │   ├── reset-password.tsx    # Set new password
+    │   │   └── admin.tsx             # Admin panel
+    │   ├── components/
+    │   │   ├── layout/Navbar.tsx     # Global dark navigation
+    │   │   ├── common/Card.tsx       # Glassmorphism card wrapper
+    │   │   ├── DogList.tsx           # Dog grid component
+    │   │   ├── DonorForm.tsx         # Add dog listing form
+    │   │   ├── NotificationBell.tsx  # In-app notifications
+    │   │   └── chat/ChatBox.tsx      # Socket.IO real-time chat
+    │   ├── context/
+    │   │   └── AuthContext.tsx       # Global auth state + JWT management
+    │   ├── utils/index.ts            # All API calls (axios wrappers)
+    │   └── styles/globals.css        # Design tokens + utility classes
+    ├── .env.local.example
+    ├── next.config.js
+    └── tailwind.config.js
 ```
 
-## 🏗 Architecture Notes
+---
 
-**V2 API (Current):**
-- Models: `User`, `Dog`, `AdoptionApplication`
-- Routes: `/api/auth`, `/api/dogs-v2`, `/api/applications`, `/api/stats`
-- All new features built on v2 architecture
+## ☁️ Deployment
 
-**Legacy V1 (Deprecated):**
-- Models: `Donor`, `Adopter`, `DogLegacy`, `AdoptionRequest`
-- Routes: `/api/donors/*`, `/api/adopters/*`, `/api/dogs` (not `/dogs-v2`)
-- Kept for backward compatibility only — DO NOT USE in new code
+### Recommended Stack (All Free Tiers)
+| Service | Purpose | Free Tier |
+|---|---|---|
+| **Vercel** | Frontend hosting | Unlimited static deploys |
+| **Render** or **Railway** | Backend hosting | 512MB RAM, sleeps after 15 min |
+| **MongoDB Atlas** | Database | 512MB storage |
+| **Cloudinary** | Image storage | 25GB bandwidth |
+| **Resend** | Email service | 3,000 emails/month |
 
-## 🤝 Contributing
+### Deployment Steps
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+**1. Database:** Create a free MongoDB Atlas cluster → get connection string → set as `MONGODB_URI`
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+**2. Backend (Render):**
+```bash
+# Build command:
+npm install && npm run build
 
-## 📄 License
+# Start command:
+npm start   # runs: node dist/src/app.js
+```
+Set all environment variables in Render dashboard.
 
-Distributed under the MIT License. See `LICENSE` for more information.
+**3. Frontend (Vercel):**
+- Connect GitHub repo → select `frontend/` as root directory
+- Set `NEXT_PUBLIC_API_URL=https://your-backend.onrender.com/api`
+- Deploy automatically on every push to `main`
+
+**4. Update CORS:**
+Set `CORS_ORIGIN=https://your-app.vercel.app` on your Render backend.
+
+---
+
+## 🧪 Testing
+
+```bash
+cd backend
+
+# Run all tests
+npm test
+
+# Run with coverage report
+npm test -- --coverage
+```
+
+Tests are written with **Jest** + **Supertest** + **mongodb-memory-server** (no real DB needed).
+
+---
+
+## 🔮 Future Roadmap
+
+- [ ] **Email notifications** — interview reminders, approval alerts (Resend/Nodemailer)
+- [ ] **Cloudinary integration** — persistent image storage on cloud
+- [ ] **Map view** — browse dogs by location using Google Maps / Leaflet
+- [ ] **Vet integration** — veterinarian role for health certificates
+- [ ] **Mobile app** — React Native companion app
+- [ ] **AI matching** — recommend dogs based on adopter's lifestyle preferences
+- [ ] **Payment gateway** — optional adoption fee processing
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+**Mugesh**  
+Full-Stack Developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-mugesh81-181717?style=for-the-badge&logo=github)](https://github.com/mugesh81)
+
+*Built with ❤️ for the dogs of Tamil Nadu*
+
+</div>
 
 ---
 
 <div align="center">
-  <p><strong>Built with ❤️ for Tamil Nadu's abandoned dogs</strong></p>
-  <p><em>Every dog deserves a second chance at life.</em></p>
+
+**⭐ If this project helped you or impressed you, please give it a star on GitHub!**
+
+Made with Next.js · Express · MongoDB · TypeScript · TailwindCSS
+
 </div>
