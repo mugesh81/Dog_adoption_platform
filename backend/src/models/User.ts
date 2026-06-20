@@ -17,6 +17,9 @@ export interface IUser extends Document {
   address?: string;
   isVerified: boolean;
   profileImageUrl?: string;
+  // Password reset
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   // Shelter specific
   shelterRegistrationNumber?: string;
   // Adopter specific
@@ -35,6 +38,10 @@ const UserSchema: Schema = new Schema({
   address: { type: String, trim: true },
   isVerified: { type: Boolean, default: false },
   profileImageUrl: { type: String },
+  
+  // Password reset
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   
   // Shelter specific fields
   shelterRegistrationNumber: { type: String, trim: true },

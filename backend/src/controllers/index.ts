@@ -1,3 +1,16 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️  DEPRECATED LEGACY CONTROLLERS (V1) — DO NOT USE IN NEW CODE
+// ─────────────────────────────────────────────────────────────────────────────
+// This file contains v1 controllers that use legacy services/models.
+// 
+// All new code should use V2 controllers:
+//   - AuthController (backend/src/controllers/auth.controller.ts)
+//   - DogController (backend/src/controllers/dog.controller.ts)
+//   - ApplicationController (backend/src/controllers/application.controller.ts)
+//
+// This file is kept ONLY for backward compatibility with legacy routes.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { Request, Response } from 'express';
 import { DonorService, AdopterService, DogService, AdoptionRequestService } from '../services/index';
 import fs from 'fs';

@@ -18,7 +18,8 @@ export const ChatBox: React.FC<{ applicationId: string }> = ({ applicationId }) 
   const { user } = useAuth();
 
   useEffect(() => {
-    socket = io('http://localhost:5000');
+    const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
+    socket = io(backendUrl);
 
     socket.emit('join', applicationId);
 

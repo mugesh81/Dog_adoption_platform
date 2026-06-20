@@ -1,17 +1,25 @@
 import React, { ReactNode } from 'react';
+import { useAuth } from '../context/AuthContext';
+import NotificationBell from './NotificationBell';
 
 type LayoutProps = {
   children: ReactNode;
 };
 
-const Header = () => (
-  <header className="bg-black bg-opacity-70 backdrop-blur-sm py-4 shadow-md">
-    <div className="container mx-auto flex items-center justify-between px-4">
-      <h1 className="text-2xl font-bold text-white">Dog Adoption Platform</h1>
-      {/* Add navigation links if needed */}
-    </div>
-  </header>
-);
+const Header = () => {
+  const { user } = useAuth();
+
+  return (
+    <header className="bg-black bg-opacity-70 backdrop-blur-sm py-4 shadow-md">
+      <div className="container mx-auto flex items-center justify-between px-4">
+        <h1 className="text-2xl font-bold text-white">Dog Adoption Platform</h1>
+        <div className="flex items-center gap-4">
+          {user && <NotificationBell />}
+        </div>
+      </div>
+    </header>
+  );
+};
 
 const Footer = () => (
   <footer className="bg-black bg-opacity-70 backdrop-blur-sm py-4 mt-8">

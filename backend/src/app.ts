@@ -1,83 +1,72 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
 import express from 'express';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
+import http from 'http';
+
+// ── Crash guards ──────────────────────────────────────────────────────────────
+process.on('uncaughtException',  (err) => console.error('Uncaught Exception:', err));
+process.on('unhandledRejection', (err) => console.error('Unhandled Rejection:', err));
+
 import routes from './routes/index';
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+const app    = express();
+const PORT   = process.env.PORT || 5000;
+const server = http.createServer(app);
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// ── CORS ──────────────────────────────────────────────────────────────────────
+// In production set CORS_ORIGIN=https://your-frontend.vercel.app
+// Multiple origins: CORS_ORIGIN=https://app1.vercel.app,https://app2.vercel.app
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  : ['http://localhost:3000', 'http://localhost:3001'];
 
-// Serve static files (uploads)
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman) or matching origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked request from origin: ${origin}`);
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// ── Middleware ────────────────────────────────────────────────────────────────
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Database connection
+// ── Database ──────────────────────────────────────────────────────────────────
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dog-adoption', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        } as any);
-        console.log('Connected to MongoDB');
+        await (mongoose.connect as any)(
+            process.env.MONGODB_URI || 'mongodb://localhost:27017/dog-adoption-platform'
+        );
+        console.log('✅ Connected to MongoDB Atlas');
     } catch (err: any) {
-        console.error('MongoDB connection error:', err);
+        console.error('❌ MongoDB connection error:', err.message);
+        process.exit(1);
     }
 };
 connectDB();
 
-// Health check route
-app.get('/health', (req, res) => {
-    res.json({ status: 'API is running' });
-});
-
-// Set up routes
+// ── Routes ────────────────────────────────────────────────────────────────────
+app.get('/health', (_req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
 app.use('/api', routes());
 
-import http from 'http';
-import { Server } from 'socket.io';
-
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*', // Allow frontend connection
-    methods: ['GET', 'POST']
-  }
+// ── Error handler ─────────────────────────────────────────────────────────────
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error('Express error:', err.message);
+    res.status(500).json({ success: false, message: err.message || 'Internal server error' });
 });
 
-// Setup Socket.io logic
-io.on('connection', (socket) => {
-  console.log('New client connected:', socket.id);
-
-  // Join a room based on user ID or application ID
-  socket.on('join', (room) => {
-    socket.join(room);
-    console.log(`Socket ${socket.id} joined room ${room}`);
-  });
-
-  socket.on('sendMessage', (data) => {
-    // data = { room, sender, text }
-    io.to(data.room).emit('newMessage', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
-  });
-});
-
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error(err.stack);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-});
-
-// Start the server
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// ── Start ─────────────────────────────────────────────────────────────────────
+server.listen(PORT, () => console.log(`Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`));

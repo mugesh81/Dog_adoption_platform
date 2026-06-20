@@ -1,4 +1,23 @@
-import { Donor, Adopter, DogLegacy as Dog, AdoptionRequest } from '../models/index';
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️  DEPRECATED LEGACY SERVICES (V1) — DO NOT USE IN NEW CODE
+// ─────────────────────────────────────────────────────────────────────────────
+// This file contains v1 services that use legacy models (Donor, Adopter, etc.)
+// 
+// All new code should use:
+//   - V2 models: User, Dog, AdoptionApplication
+//   - V2 controllers: AuthController, DogController, ApplicationController
+//   - V2 routes: /api/auth, /api/dogs-v2, /api/applications
+//
+// This file is kept ONLY for backward compatibility with legacy routes.
+// DO NOT ADD NEW FUNCTIONALITY HERE.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { Donor } from '../models/Donor';
+import { Adopter } from '../models/Adopter';
+import { DogLegacy as Dog } from '../models/DogLegacy';
+import { AdoptionRequest } from '../models/AdoptionRequest';
 
 // ─── Validation helpers ───────────────────────────────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -14,7 +33,7 @@ function validateRequired(value: string, field: string) {
     if (!value || value.trim().length < 2) throw new Error(`${field} is required and must be at least 2 characters`);
 }
 
-// ─── Donor Service ────────────────────────────────────────────────────────────
+// ─── Donor Service (LEGACY) ───────────────────────────────────────────────────
 export const DonorService = {
     async registerDonor(data: any) {
         validateRequired(data.name, 'Name');
@@ -39,7 +58,7 @@ export const DonorService = {
     }
 };
 
-// ─── Adopter Service ──────────────────────────────────────────────────────────
+// ─── Adopter Service (LEGACY) ─────────────────────────────────────────────────
 export const AdopterService = {
     async registerAdopter(data: any) {
         validateRequired(data.name, 'Name');
@@ -72,7 +91,7 @@ export const AdopterService = {
     }
 };
 
-// ─── Dog Service ──────────────────────────────────────────────────────────────
+// ─── Dog Service (LEGACY) ─────────────────────────────────────────────────────
 export const DogService = {
     async createDog(data: any) {
         validateRequired(data.name, 'Dog name');
@@ -132,7 +151,7 @@ export const DogService = {
     }
 };
 
-// ─── Adoption Request Service ─────────────────────────────────────────────────
+// ─── Adoption Request Service (LEGACY) ────────────────────────────────────────
 export const AdoptionRequestService = {
     async create(data: any) {
         validateRequired(data.adopterName, 'Your name');

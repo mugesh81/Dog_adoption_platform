@@ -11,6 +11,15 @@ export enum ApplicationStatus {
   CANCELLED = 'cancelled'
 }
 
+export enum InterviewStatus {
+  NOT_SCHEDULED = 'not_scheduled',
+  PROPOSED = 'proposed',
+  CONFIRMED = 'confirmed',
+  RESCHEDULED = 'rescheduled',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled'
+}
+
 export interface IAdoptionApplication extends Document {
   dogId: mongoose.Types.ObjectId;
   adopterId: mongoose.Types.ObjectId;
@@ -23,11 +32,21 @@ export interface IAdoptionApplication extends Document {
   otherPetsDescription?: string;
   familyMembersCount: number;
   agreeToHomeVisit: boolean;
+  // Adopter contact for direct communication (WhatsApp/phone)
+  adopterPhone?: string;
+  adopterWhatsApp?: string;
+  adopterCity?: string;
+  
+  // Interview scheduling
+  interviewDate?: Date;
+  interviewStatus?: InterviewStatus;
+  interviewNotes?: string;
+  interviewProposedBy?: mongoose.Types.ObjectId;
   
   // Workflow tracking
-  interviewDate?: Date;
   homeVisitDate?: Date;
   rejectionReason?: string;
+  rescheduleCount: number;
   
   createdAt: Date;
   updatedAt: Date;
@@ -44,10 +63,19 @@ const AdoptionApplicationSchema: Schema = new Schema({
   otherPetsDescription: { type: String },
   familyMembersCount: { type: Number, required: true, min: 1 },
   agreeToHomeVisit: { type: Boolean, required: true },
+  adopterPhone: { type: String, trim: true },
+  adopterWhatsApp: { type: String, trim: true },
+  adopterCity: { type: String, trim: true },
   
+  // Interview scheduling
   interviewDate: { type: Date },
+  interviewStatus: { type: String, enum: Object.values(InterviewStatus), default: InterviewStatus.NOT_SCHEDULED },
+  interviewNotes: { type: String },
+  interviewProposedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  
   homeVisitDate: { type: Date },
   rejectionReason: { type: String },
+  rescheduleCount: { type: Number, default: 0 },
 }, { timestamps: true });
 
 // Prevent duplicate active applications for the same dog by the same adopter

@@ -123,5 +123,25 @@ dist
 # Mac OS
 .DS_Store
 
-# Uploads directory
+# Uploads directory (local dog images — use Cloudinary in production)
 backend/uploads/
+
+# Backend compiled output (run 'npm run build' to regenerate)
+backend/dist/
+
+# Windows system files
+desktop.ini
+Thumbs.db
+ehthumbs.db
+
+# macOS system files
+.DS_Store
+
+# VS Code (keep .vscode/extensions.json but not personal settings)
+.vscode/settings.json
+.vscode/launch.json
+.vscode/*.code-workspace
+
+# Stray HTML prototype files
+*.html
+!public/**/*.html

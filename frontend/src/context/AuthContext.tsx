@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { getMe } from '../utils/index';
 
 interface User {
   _id: string;
@@ -31,22 +31,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.get('http://localhost:5000/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => {
-        if(res.data.success) {
-           setUser(res.data.data);
-        } else {
-           localStorage.removeItem('token');
-        }
-      })
-      .catch(() => {
-        localStorage.removeItem('token');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      getMe()
+        .then((res: any) => {
+          if (res.success) setUser(res.data);
+          else localStorage.removeItem('token');
+        })
+        .catch(() => localStorage.removeItem('token'))
+        .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
@@ -54,7 +45,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = (token: string, userData: User) => {
     localStorage.setItem('token', token);
-    setUser(userData);
+    const { token: _t, ...userWithoutToken } = userData as User & { token?: string };
+    setUser(userWithoutToken);
   };
 
   const logout = () => {

@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShieldCheck, HeartPulse, HeartHandshake, ArrowRight, PawPrint, Dog, Users, Heart } from 'lucide-react';
 import DonorForm from '../components/DonorForm';
-import AdopterForm from '../components/AdopterForm';
 import DogList from '../components/DogList';
 import { getStats } from '../utils/index';
+import { useAuth } from '../context/AuthContext';
 
 interface Stats { available: number; adopted: number; adopters: number; donors: number; }
 
@@ -13,6 +13,7 @@ const HomePage = () => {
   const dogListRef = useRef<HTMLElement>(null);
   const [dogListKey, setDogListKey] = useState(0);
   const [stats, setStats] = useState<Stats | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     getStats().then(r => r?.data && setStats(r.data)).catch(() => {});
@@ -44,10 +45,19 @@ const HomePage = () => {
             <span className="gradient-text">Paws&Hearts</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/admin"
-              className="hidden sm:flex items-center gap-2 text-indigo-400 hover:text-indigo-300 px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
-              <ShieldCheck className="w-4 h-4" /> Admin
-            </Link>
+            {user ? (
+              <Link href="/dashboard" className="hidden sm:flex text-slate-400 hover:text-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">Dashboard</Link>
+            ) : (
+              <>
+                <Link href="/login" className="hidden sm:flex text-slate-400 hover:text-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">Login</Link>
+                <Link href="/register" className="hidden sm:flex text-indigo-400 hover:text-indigo-300 px-4 py-2 rounded-xl text-sm font-semibold">Register</Link>
+              </>
+            )}
+            {user?.role === 'admin' && (
+              <Link href="/admin" className="hidden sm:flex items-center gap-2 text-indigo-400 hover:text-indigo-300 px-4 py-2 rounded-xl text-sm font-semibold">
+                <ShieldCheck className="w-4 h-4" /> Admin
+              </Link>
+            )}
             <button onClick={scrollToDogs}
               className="hidden sm:block text-slate-400 hover:text-slate-200 px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
               Browse Dogs
@@ -136,7 +146,7 @@ const HomePage = () => {
       <main className="max-w-7xl mx-auto px-4 py-24 w-full space-y-32">
 
         {/* Registration portals */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start relative">
+        <section id="donor-form" className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start relative">
           {/* Donor */}
           <motion.div
             initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }}
@@ -153,7 +163,7 @@ const HomePage = () => {
                 Owner Portal
               </h2>
               <p className="text-slate-400 text-base font-light leading-relaxed max-w-md">
-                Register and list your dog. Your listing appears instantly in the dogs section below.
+                Sign in as a donor or shelter to list your dog. Listings appear instantly below.
               </p>
             </div>
             <DonorForm onSuccess={refreshDogList} />
@@ -175,10 +185,17 @@ const HomePage = () => {
                 Adopter Portal
               </h2>
               <p className="text-slate-400 text-base font-light leading-relaxed max-w-md">
-                Register as an adopter — after submitting you'll be scrolled straight to the dogs waiting for a home.
+                Create an adopter account, browse dogs, and submit applications from your dashboard.
               </p>
             </div>
-            <AdopterForm onSuccess={scrollToDogs} />
+            <div className="glass-panel p-8 rounded-2xl space-y-5 text-center">
+              <HeartHandshake className="w-12 h-12 text-pink-400 mx-auto" />
+              <p className="text-slate-300 text-sm leading-relaxed">One account for the full adoption journey — browse, apply, and track status in one place.</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="/register" className="px-6 py-3 rounded-xl font-bold text-sm gradient-btn-green">Create Adopter Account</Link>
+                <Link href="/browse" className="px-6 py-3 rounded-xl font-bold text-sm border border-slate-600 text-slate-300 hover:text-white">Browse Dogs</Link>
+              </div>
+            </div>
           </motion.div>
         </section>
 
